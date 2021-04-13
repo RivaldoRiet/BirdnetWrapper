@@ -20,8 +20,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="mytest.py">
+    <Resource Include="mytest.py">
       <Filter>Resource Files</Filter>
-    </None>
+    </Resource>
   </ItemGroup>
 </Project>
