@@ -11,7 +11,7 @@ if x == 1:
 
 def multiply(a, b):
     print ('Will compute', a, 'times', b)
-    c = 0
+    c = 5
     for i in range(0, a):
         c = c + b
     return c

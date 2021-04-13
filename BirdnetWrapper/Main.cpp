@@ -17,26 +17,24 @@ int main(int argc, char* argv[])
     PyObject* pArgs, * pValue;
     int i;
 
-    if (argc < 3) {
-        fprintf(stderr, "Usage: call pythonfile funcname [args]\n");
-        return 1;
-    }
+    std::string pythonScriptName = "mytest";
+    std::string pythonFunctionName = "multiply";
 
     Py_Initialize();
-    pName = PyUnicode_DecodeFSDefault(argv[1]);
+    pName = PyUnicode_DecodeFSDefault(pythonScriptName.c_str());
     /* Error checking of pName left out */
 
     pModule = PyImport_Import(pName);
     Py_DECREF(pName);
 
     if (pModule != NULL) {
-        pFunc = PyObject_GetAttrString(pModule, argv[2]);
+        pFunc = PyObject_GetAttrString(pModule, pythonFunctionName.c_str());
         /* pFunc is a new reference */
 
         if (pFunc && PyCallable_Check(pFunc)) {
-            pArgs = PyTuple_New(argc - 3);
-            for (i = 0; i < argc - 3; ++i) {
-                pValue = PyLong_FromLong(atoi(argv[i + 3]));
+            pArgs = PyTuple_New(2);
+            for (i = 0; i < 2; ++i) {
+                pValue = PyLong_FromLong(2);
                 if (!pValue) {
                     Py_DECREF(pArgs);
                     Py_DECREF(pModule);
@@ -63,18 +61,20 @@ int main(int argc, char* argv[])
         else {
             if (PyErr_Occurred())
                 PyErr_Print();
-            fprintf(stderr, "Cannot find function \"%s\"\n", argv[2]);
+            fprintf(stderr, "Cannot find function \"%s\"\n", pythonScriptName);
         }
         Py_XDECREF(pFunc);
         Py_DECREF(pModule);
     }
     else {
         PyErr_Print();
-        fprintf(stderr, "Failed to load \"%s\"\n", argv[1]);
+        fprintf(stderr, "Failed to load \"%s\"\n", pythonFunctionName);
         return 1;
     }
     if (Py_FinalizeEx() < 0) {
         return 120;
     }
+
+    std::getchar();
     return 0;
 }
