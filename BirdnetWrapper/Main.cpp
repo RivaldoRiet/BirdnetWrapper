@@ -61,14 +61,14 @@ int main(int argc, char* argv[])
         else {
             if (PyErr_Occurred())
                 PyErr_Print();
-            fprintf(stderr, "Cannot find function \"%s\"\n", pythonScriptName);
+            fprintf(stderr, "Cannot find function \"%s\"\n", pythonScriptName.c_str());
         }
         Py_XDECREF(pFunc);
         Py_DECREF(pModule);
     }
     else {
         PyErr_Print();
-        fprintf(stderr, "Failed to load \"%s\"\n", pythonFunctionName);
+        fprintf(stderr, "Failed to load \"%s\"\n", pythonFunctionName.c_str());
         return 1;
     }
     if (Py_FinalizeEx() < 0) {
