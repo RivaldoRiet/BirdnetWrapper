@@ -27,6 +27,13 @@ int main(int argc, char* argv[]) {
 	py::object array_from_python = py::import("mytest").attr("writeResultsToArray");
 
 	py::list abc = py::extract<py::list>((array_from_python()));
+	boost::python::ssize_t n = boost::python::len(abc);
+	for (boost::python::ssize_t i = 0; i < n; i++) {
+		boost::python::object elem = abc[i];
+		std::string up = py::extract<std::string>(elem);
+		std::cout << "Elem value: '" << up << "'" << std::endl;
+	}
+
 
 	std::string return_value1 = py::extract<std::string>(hello_from_python());
 
