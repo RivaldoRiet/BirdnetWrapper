@@ -11,7 +11,6 @@ def writeResultsToArray():
     print('DONE! WROTE', rcnt, 'RESULTS.')
     return my_list
 
-get_dir_list.get_dir_list(os.listdir('.'))
 print(writeResultsToArray())
 
 

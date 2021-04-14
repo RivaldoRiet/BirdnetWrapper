@@ -22,16 +22,29 @@ int main(int argc, char* argv[]) {
 	// Add the current directory to the path.
 	py::import("sys").attr("path").attr("append")(".");
 
-	// Get the "hello_from_python" function from "hello.py".
+
 	py::object hello_from_python = py::import("mytest").attr("hello_from_python");
 	py::object array_from_python = py::import("mytest").attr("writeResultsToArray");
 
-	// Call the "hello_from_python" and extract the return value as a string.
-	//std::vector return_value = py::extract<std::string>(array_from_python());
+	py::list abc = py::extract<py::list>((array_from_python()));
+
 	std::string return_value1 = py::extract<std::string>(hello_from_python());
 
 	// Print out the return value.//
-	//std::cout << "Return value: '" << return_value << "'" << std::endl;
+	std::cout << "Return value: '" << len(abc) << "'" << std::endl;
+}
+
+boost::python::list extract_list(py::object x)
+{
+	py::extract<py::list> get_list((x));
+
+	// Make sure we always have the right idea about whether it's a list
+	bool is_list_1 = get_list.check();
+	bool is_list_2 = PyObject_IsInstance(x.ptr(), (PyObject*)&PyList_Type);
+	if (is_list_1 != is_list_2) {
+		throw std::runtime_error("is_list_1 == is_list_2 failure.");
+	}
+	return get_list();
 }
 
 template< typename T >
