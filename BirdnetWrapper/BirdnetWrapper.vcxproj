@@ -108,7 +108,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)BirdnetWrapper\mytest.py" "$(TargetDir)mytest.py"</Command>
+      <Command>copy "$(SolutionDir)BirdnetWrapper\BirdNET-Lite" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -133,7 +133,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)BirdnetWrapper\mytest.py" "$(TargetDir)mytest.py"</Command>
+      <Command>copy "$(SolutionDir)BirdnetWrapper\BirdNET-Lite" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -154,7 +154,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)BirdnetWrapper\mytest.py" "$(TargetDir)mytest.py"</Command>
+      <Command>copy "$(SolutionDir)BirdnetWrapper\BirdNET-Lite" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -179,7 +179,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)BirdnetWrapper\mytest.py" "$(TargetDir)mytest.py"</Command>
+      <Command>copy "$(SolutionDir)BirdnetWrapper\BirdNET-Lite" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

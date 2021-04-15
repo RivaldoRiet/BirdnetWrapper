@@ -19,11 +19,10 @@ int main(int argc, char* argv[]) {
 	// Initialize the Python interpreter.
 	Py_Initialize();
 
-	// Add the current directory to the path.
-	py::import("sys").attr("path").attr("append")(".");
+	// Add the current dir//r("path").attr("append")(".");
 
-	py::object hello_from_python = py::import("mytest").attr("hello_from_python");
-	py::object array_from_python = py::import("mytest").attr("writeResultsToArray");
+	//py::object array_from_python = py::import("analyze").attr("writeResultsToArray");
+	py::object array_from_python = py::import("analyze").attr("loadModel");
 
 	py::list abc = py::extract<py::list>((array_from_python()));
 	py::ssize_t n = py::len(abc);
@@ -33,7 +32,7 @@ int main(int argc, char* argv[]) {
 		std::cout << "Elem value: '" << up << "'" << std::endl;
 	}
 
-	std::string return_value1 = py::extract<std::string>(hello_from_python());
+	//std::string return_value1 = py::extract<std::string>(hello_from_python());
 
 	// Print out the return value.//
 	std::cout << "Return value: '" << len(abc) << "'" << std::endl;

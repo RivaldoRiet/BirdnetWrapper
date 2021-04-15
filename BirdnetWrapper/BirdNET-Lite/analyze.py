@@ -16,7 +16,19 @@ import math
 import time
 import datetime
 
-def loadModel(path, sample_rate=48000):
+def writeResultsToArray():
+    my_list = list()
+    rcnt = 0
+    for x in range(0, 15):
+        my_list.append('AAAAAAAAAAAAAAAAAAAAAAAA')
+        rcnt += 1
+    print('DONE! WROTE', rcnt, 'RESULTS.')
+    #time.sleep(3)
+    return my_list
+
+print(writeResultsToArray())
+
+def loadModel(path="pimpelmees.wav", sample_rate=48000):
 
     global INPUT_LAYER_INDEX
     global OUTPUT_LAYER_INDEX
@@ -81,8 +93,17 @@ def loadModel(path, sample_rate=48000):
         pred_start = pred_end - 0.0
 
     print('DONE! Time', int((time.time() - start) * 10) / 10.0, 'SECONDS')
-
-    return detections
+    
+    my_list = list()
+    rcnt = 0
+    for d in detections:
+            for entry in detections[d]:
+                if entry[1] >= min_conf and (entry[0] in WHITE_LIST or len(WHITE_LIST) == 0):
+                    my_list.append(d + ';' + entry[0].replace('_', ';') + ';' + str(entry[1]))
+                    rcnt += 1
+    print('DONE! WROTE', rcnt, 'RESULTS.')
+    #time.sleep(3)
+    return my_list
 
 def loadCustomSpeciesList(path):
 
@@ -245,11 +266,11 @@ def main():
     # Process audio data and get detections
     week = max(1, min(args.week, 48))
     sensitivity = max(0.5, min(1.0 - (args.sensitivity - 1.0), 1.5))
-    detections = loadModel(args.i)
+    detections = loadModel()
 
     # Write detections to output file
     min_conf = max(0.01, min(args.min_conf, 0.99))
-    writeResultsToFile(detections, min_conf, args.o)
+    #writeResultsToFile(detections, min_conf, args.o)
 
 if __name__ == '__main__':
 
