@@ -16,7 +16,7 @@ import math
 import time
 import datetime
 
-def loadModel():
+def loadModel(path, sample_rate=48000):
 
     global INPUT_LAYER_INDEX
     global OUTPUT_LAYER_INDEX
@@ -46,7 +46,43 @@ def loadModel():
 
     print('DONE!')
 
-    return interpreter
+    print('READING AUDIO DATA...', end=' ', flush=True)
+
+    # Open file with librosa (uses ffmpeg or libav)
+    sig, rate = librosa.load(path, sr=sample_rate, mono=True, res_type='kaiser_fast')
+
+    # Split audio into 3-second chunks
+    chunks = splitSignal(sig, rate, 0.0)
+
+    print('DONE! READ', str(len(chunks)), 'CHUNKS.')
+
+    my_date = datetime.date.today()  # current date
+    year, week_num, day_of_week = my_date.isocalendar()
+    detections = {}
+    start = time.time()
+    print('ANALYZING AUDIO...', end=' ', flush=True)
+
+    # Convert and prepare metadata
+    mdata = convertMetadata(np.array([52.379189, -4.899431, week_num]))
+    mdata = np.expand_dims(mdata, 0)
+
+    # Parse every chunk
+    pred_start = 0.0
+    for c in chunks:
+        # Prepare as input signal
+        sig = np.expand_dims(c, 0)
+
+        # Make prediction
+        p = predict([sig, mdata], interpreter, 1)
+
+        # Save result and timestamp
+        pred_end = pred_start + 3.0
+        detections[str(pred_start) + ';' + str(pred_end)] = p
+        pred_start = pred_end - 0.0
+
+    print('DONE! Time', int((time.time() - start) * 10) / 10.0, 'SECONDS')
+
+    return detections
 
 def loadCustomSpeciesList(path):
 
@@ -87,7 +123,7 @@ def readAudioData(path, overlap, sample_rate=48000):
     sig, rate = librosa.load(path, sr=sample_rate, mono=True, res_type='kaiser_fast')
 
     # Split audio into 3-second chunks
-    chunks = splitSignal(sig, rate, overlap)
+    chunks = splitSignal(sig, rate, 0.0)
 
     print('DONE! READ', str(len(chunks)), 'CHUNKS.')
 
@@ -200,23 +236,16 @@ def main():
 
     args = parser.parse_args()
 
-    # Load model
-    interpreter = loadModel()
-
     # Load custom species list
     if not args.custom_list == '':
         WHITE_LIST = loadCustomSpeciesList(args.custom_list)
     else:
         WHITE_LIST = []
 
-
-    # Read audio data
-    audioData = readAudioData(args.i, args.overlap)
-
     # Process audio data and get detections
     week = max(1, min(args.week, 48))
     sensitivity = max(0.5, min(1.0 - (args.sensitivity - 1.0), 1.5))
-    detections = analyzeAudioData(audioData, interpreter)
+    detections = loadModel(args.i)
 
     # Write detections to output file
     min_conf = max(0.01, min(args.min_conf, 0.99))
