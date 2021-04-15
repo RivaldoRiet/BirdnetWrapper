@@ -1,0 +1,54 @@
+Start (s);End (s);Scientific name;Common name;Confidence
+0.0;3.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9990434
+0.0;3.0;Cyanistes cyanus;Azure Tit;0.1074268
+3.0;6.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9645305
+6.0;9.0;Cyanistes caeruleus;Eurasian Blue Tit;0.88676584
+9.0;12.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9908676
+9.0;12.0;Parus major;Great Tit;0.107031286
+12.0;15.0;Cyanistes caeruleus;Eurasian Blue Tit;0.5304693
+12.0;15.0;Troglodytes troglodytes;Eurasian Wren;0.12830213
+15.0;18.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9899429
+18.0;21.0;Cyanistes caeruleus;Eurasian Blue Tit;0.36916417
+21.0;24.0;Cyanistes caeruleus;Eurasian Blue Tit;0.97355676
+24.0;27.0;Cyanistes caeruleus;Eurasian Blue Tit;0.92179346
+24.0;27.0;Parus major;Great Tit;0.13242906
+27.0;30.0;Cyanistes caeruleus;Eurasian Blue Tit;0.42260712
+30.0;33.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9961398
+33.0;36.0;Cyanistes caeruleus;Eurasian Blue Tit;0.8524646
+36.0;39.0;Cyanistes caeruleus;Eurasian Blue Tit;0.8937087
+39.0;42.0;Cyanistes caeruleus;Eurasian Blue Tit;0.96342313
+42.0;45.0;Cyanistes caeruleus;Eurasian Blue Tit;0.95498085
+45.0;48.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9979632
+48.0;51.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9492558
+51.0;54.0;Cyanistes caeruleus;Eurasian Blue Tit;0.3757133
+51.0;54.0;Emberiza citrinella;Yellowhammer;0.16057117
+54.0;57.0;Cyanistes caeruleus;Eurasian Blue Tit;0.7605121
+57.0;60.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9947701
+60.0;63.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9900119
+63.0;66.0;Cyanistes caeruleus;Eurasian Blue Tit;0.98631775
+66.0;69.0;Cyanistes caeruleus;Eurasian Blue Tit;0.7465851
+66.0;69.0;Emberiza citrinella;Yellowhammer;0.1808935
+69.0;72.0;Cyanistes caeruleus;Eurasian Blue Tit;0.91943413
+72.0;75.0;Cyanistes caeruleus;Eurasian Blue Tit;0.97931665
+75.0;78.0;Cyanistes caeruleus;Eurasian Blue Tit;0.99186254
+78.0;81.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9990472
+81.0;84.0;Prunella modularis;Dunnock;0.1415429
+84.0;87.0;Cyanistes caeruleus;Eurasian Blue Tit;0.8919149
+87.0;90.0;Cyanistes caeruleus;Eurasian Blue Tit;0.97426313
+90.0;93.0;Cyanistes caeruleus;Eurasian Blue Tit;0.99547786
+93.0;96.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9835691
+99.0;102.0;Cyanistes caeruleus;Eurasian Blue Tit;0.8898973
+102.0;105.0;Cyanistes caeruleus;Eurasian Blue Tit;0.8830646
+105.0;108.0;Cyanistes caeruleus;Eurasian Blue Tit;0.99611354
+108.0;111.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9493798
+111.0;114.0;Cyanistes caeruleus;Eurasian Blue Tit;0.52371657
+111.0;114.0;Parus major;Great Tit;0.44360653
+111.0;114.0;Poecile montanus;Willow Tit;0.24797308
+114.0;117.0;Cyanistes caeruleus;Eurasian Blue Tit;0.3607597
+117.0;120.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9961506
+117.0;120.0;Parus major;Great Tit;0.12034455
+120.0;123.0;Cyanistes caeruleus;Eurasian Blue Tit;0.99540365
+123.0;126.0;Cyanistes caeruleus;Eurasian Blue Tit;0.9944876
+126.0;129.0;Cyanistes caeruleus;Eurasian Blue Tit;0.45737654
+126.0;129.0;Parus major;Great Tit;0.27208862
+129.0;132.0;Cyanistes caeruleus;Eurasian Blue Tit;0.5865047

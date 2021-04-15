@@ -1,17 +1,37 @@
-import math
+import time
 
-def myabs(x):
-    return math.fabs(x)
-
-x = 1
-if x == 1:
-    # indented four spaces
-    print("x was 1.")
+def hello_from_python ():
+  return 'Hello from Python!'
 
 
-def multiply(a, b):
-    print ('Will compute', a, 'times', b)
-    c = 7
-    for i in range(0, a):
-        c = c + b
-    return c
+def writeResultsToArray():
+    my_list = list()
+    rcnt = 0
+    for x in range(0, 15):
+        my_list.append('AAAAAAAAAAAAAAAAAAAAAAAA')
+        rcnt += 1
+    print('DONE! WROTE', rcnt, 'RESULTS.')
+    #time.sleep(3)
+    return my_list
+
+print(writeResultsToArray())
+
+
+""" Birdnet file code
+def writeResultsToFile(detections, min_conf, path):
+
+    print('WRITING RESULTS TO', path, '...', end=' ')
+    rcnt = 0
+    with open(path, 'w') as rfile:
+        rfile.write('Start (s);End (s);Scientific name;Common name;Confidence\n')
+        for d in detections:
+            for entry in detections[d]:
+                if entry[1] >= min_conf and (entry[0] in WHITE_LIST or len(WHITE_LIST) == 0):
+                    rfile.write(d + ';' + entry[0].replace('_', ';') + ';' + str(entry[1]) + '\n')
+                    rcnt += 1
+    print('DONE! WROTE', rcnt, 'RESULTS.')
+
+
+      for d in detections: << this array contains 
+
+"""

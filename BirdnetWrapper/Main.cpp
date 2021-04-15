@@ -1,80 +1,61 @@
 #include <iostream>
-#ifdef _DEBUG
-#define _DEBUG_WAS_DEFINED
-#undef _DEBUG
-#endif
+#include <string>
+#include <boost/python.hpp>
+#include <boost/python/numpy.hpp>
+#include <vector>
 
-#include "Python.h"
+namespace py = boost::python;
+namespace np = boost::python::numpy;
 
-#ifdef _DEBUG_WAS_DEFINED
-#define _DEBUG
-#undef _DEBUG_WAS_DEFINED
-#endif
-
-int main(int argc, char* argv[])
+template<typename T>
+inline
+std::vector< T > py_list_to_std_vector(const boost::python::object& iterable)
 {
-    PyObject* pName, * pModule, * pFunc;
-    PyObject* pArgs, * pValue;
-    int i;
+	return std::vector< T >(boost::python::stl_input_iterator< T >(iterable),
+		boost::python::stl_input_iterator< T >());
+}
 
-    std::string pythonScriptName = "mytest";
-    std::string pythonFunctionName = "multiply";
+int main(int argc, char* argv[]) {
+	// Initialize the Python interpreter.
+	Py_Initialize();
 
-    Py_Initialize();
-    pName = PyUnicode_DecodeFSDefault(pythonScriptName.c_str());
-    /* Error checking of pName left out */
+	// Add the current directory to the path.
+	py::import("sys").attr("path").attr("append")(".");
 
-    pModule = PyImport_Import(pName);
-    Py_DECREF(pName);
+	py::object hello_from_python = py::import("mytest").attr("hello_from_python");
+	py::object array_from_python = py::import("mytest").attr("writeResultsToArray");
 
-    if (pModule != NULL) {
-        pFunc = PyObject_GetAttrString(pModule, pythonFunctionName.c_str());
-        /* pFunc is a new reference */
+	py::list abc = py::extract<py::list>((array_from_python()));
+	py::ssize_t n = py::len(abc);
+	for (py::ssize_t i = 0; i < n; i++) {
+		py::object elem = abc[i];
+		std::string up = py::extract<std::string>(elem);
+		std::cout << "Elem value: '" << up << "'" << std::endl;
+	}
 
-        if (pFunc && PyCallable_Check(pFunc)) {
-            pArgs = PyTuple_New(2);
-            for (i = 0; i < 2; ++i) {
-                pValue = PyLong_FromLong(2);
-                if (!pValue) {
-                    Py_DECREF(pArgs);
-                    Py_DECREF(pModule);
-                    fprintf(stderr, "Cannot convert argument\n");
-                    return 1;
-                }
-                /* pValue reference stolen here: */
-                PyTuple_SetItem(pArgs, i, pValue);
-            }
-            pValue = PyObject_CallObject(pFunc, pArgs);
-            Py_DECREF(pArgs);
-            if (pValue != NULL) {
-                printf("Result of call: %ld\n", PyLong_AsLong(pValue));
-                Py_DECREF(pValue);
-            }
-            else {
-                Py_DECREF(pFunc);
-                Py_DECREF(pModule);
-                PyErr_Print();
-                fprintf(stderr, "Call failed\n");
-                return 1;
-            }
-        }
-        else {
-            if (PyErr_Occurred())
-                PyErr_Print();
-            fprintf(stderr, "Cannot find function \"%s\"\n", pythonScriptName.c_str());
-        }
-        Py_XDECREF(pFunc);
-        Py_DECREF(pModule);
-    }
-    else {
-        PyErr_Print();
-        fprintf(stderr, "Failed to load \"%s\"\n", pythonFunctionName.c_str());
-        return 1;
-    }
-    if (Py_FinalizeEx() < 0) {
-        return 120;
-    }
+	std::string return_value1 = py::extract<std::string>(hello_from_python());
 
-    std::getchar();
-    return 0;
+	// Print out the return value.//
+	std::cout << "Return value: '" << len(abc) << "'" << std::endl;
+}
+
+boost::python::list extract_list(py::object x)
+{
+	py::extract<py::list> get_list((x));
+
+	// Make sure we always have the right idea about whether it's a list
+	bool is_list_1 = get_list.check();
+	bool is_list_2 = PyObject_IsInstance(x.ptr(), (PyObject*)&PyList_Type);
+	if (is_list_1 != is_list_2) {
+		throw std::runtime_error("is_list_1 == is_list_2 failure.");
+	}
+	return get_list();
+}
+
+template< typename T >
+inline
+std::vector< T > to_std_vector(const py::object& iterable)
+{
+	return std::vector< T >(py::stl_input_iterator< T >(iterable),
+		py::stl_input_iterator< T >());
 }
