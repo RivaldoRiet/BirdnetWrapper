@@ -16,7 +16,7 @@ import math
 import time
 import datetime
 
-def loadModel():
+def loadModel(path, sample_rate=48000):
 
     global INPUT_LAYER_INDEX
     global OUTPUT_LAYER_INDEX
@@ -46,7 +46,43 @@ def loadModel():
 
     print('DONE!')
 
-    return interpreter
+    print('READING AUDIO DATA...', end=' ', flush=True)
+
+    # Open file with librosa (uses ffmpeg or libav)
+    sig, rate = librosa.load(path, sr=sample_rate, mono=True, res_type='kaiser_fast')
+
+    # Split audio into 3-second chunks
+    chunks = splitSignal(sig, rate, 0.0)
+
+    print('DONE! READ', str(len(chunks)), 'CHUNKS.')
+
+    my_date = datetime.date.today()  # current date
+    year, week_num, day_of_week = my_date.isocalendar()
+    detections = {}
+    start = time.time()
+    print('ANALYZING AUDIO...', end=' ', flush=True)
+
+    # Convert and prepare metadata
+    mdata = convertMetadata(np.array([52.379189, -4.899431, week_num]))
+    mdata = np.expand_dims(mdata, 0)
+
+    # Parse every chunk
+    pred_start = 0.0
+    for c in chunks:
+        # Prepare as input signal
+        sig = np.expand_dims(c, 0)
+
+        # Make prediction
+        p = predict([sig, mdata], interpreter, 1)
+
+        # Save result and timestamp
+        pred_end = pred_start + 3.0
+        detections[str(pred_start) + ';' + str(pred_end)] = p
+        pred_start = pred_end - 0.0
+
+    print('DONE! Time', int((time.time() - start) * 10) / 10.0, 'SECONDS')
+
+    return detections
 
 def loadCustomSpeciesList(path):
 
@@ -68,13 +104,13 @@ def splitSignal(sig, rate, overlap, seconds=3.0, minlen=1.5):
         # End of signal?
         if len(split) < int(minlen * rate):
             break
-        
+
         # Signal chunk too short? Fill with zeros.
         if len(split) < int(rate * seconds):
             temp = np.zeros((int(rate * seconds)))
             temp[:len(split)] = split
             split = temp
-        
+
         sig_splits.append(split)
 
     return sig_splits
@@ -87,7 +123,7 @@ def readAudioData(path, overlap, sample_rate=48000):
     sig, rate = librosa.load(path, sr=sample_rate, mono=True, res_type='kaiser_fast')
 
     # Split audio into 3-second chunks
-    chunks = splitSignal(sig, rate, overlap)
+    chunks = splitSignal(sig, rate, 0.0)
 
     print('DONE! READ', str(len(chunks)), 'CHUNKS.')
 
@@ -97,7 +133,7 @@ def convertMetadata(m):
 
     # Convert week to cosine
     if m[2] >= 1 and m[2] <= 48:
-        m[2] = math.cos(math.radians(m[2] * 7.5)) + 1 
+        m[2] = math.cos(math.radians(m[2] * 7.5)) + 1
     else:
         m[2] = -1
 
@@ -195,13 +231,10 @@ def main():
     parser.add_argument('--week', type=int, default=-1, help='Week of the year when the recording was made. Values in [1, 48] (4 weeks per month). Set -1 to ignore.')
     parser.add_argument('--overlap', type=float, default=0.0, help='Overlap in seconds between extracted spectrograms. Values in [0.0, 2.9]. Defaults tp 0.0.')
     parser.add_argument('--sensitivity', type=float, default=1.0, help='Detection sensitivity; Higher values result in higher sensitivity. Values in [0.5, 1.5]. Defaults to 1.0.')
-    parser.add_argument('--min_conf', type=float, default=0.1, help='Minimum confidence threshold. Values in [0.01, 0.99]. Defaults to 0.1.')   
+    parser.add_argument('--min_conf', type=float, default=0.1, help='Minimum confidence threshold. Values in [0.01, 0.99]. Defaults to 0.1.')
     parser.add_argument('--custom_list', default='', help='Path to text file containing a list of species. Not used if not provided.')
 
     args = parser.parse_args()
-
-    # Load model
-    interpreter = loadModel()
 
     # Load custom species list
     if not args.custom_list == '':
@@ -209,14 +242,10 @@ def main():
     else:
         WHITE_LIST = []
 
-
-    # Read audio data
-    audioData = readAudioData(args.i, args.overlap)
-
     # Process audio data and get detections
     week = max(1, min(args.week, 48))
     sensitivity = max(0.5, min(1.0 - (args.sensitivity - 1.0), 1.5))
-    detections = analyzeAudioData(audioData, interpreter)
+    detections = loadModel(args.i)
 
     # Write detections to output file
     min_conf = max(0.01, min(args.min_conf, 0.99))
