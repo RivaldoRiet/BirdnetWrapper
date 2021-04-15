@@ -21,8 +21,8 @@ int main(int argc, char* argv[]) {
 
 	// Add the current dir//r("path").attr("append")(".");
 
-	//py::object array_from_python = py::import("analyze").attr("writeResultsToArray");
-	py::object array_from_python = py::import("analyze").attr("loadModel");
+	py::object array_from_python = py::import("analyze").attr("writeResultsToArray");
+	//py::object array_from_python = py::import("analyze").attr("loadModel");
 
 	py::list abc = py::extract<py::list>((array_from_python()));
 	py::ssize_t n = py::len(abc);

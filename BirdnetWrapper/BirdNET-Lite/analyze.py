@@ -98,7 +98,7 @@ def loadModel(path="pimpelmees.wav", sample_rate=48000):
     rcnt = 0
     for d in detections:
             for entry in detections[d]:
-                if entry[1] >= min_conf and (entry[0] in WHITE_LIST or len(WHITE_LIST) == 0):
+                if entry[1] >= 0.1 and (entry[0] in WHITE_LIST or len(WHITE_LIST) == 0):
                     my_list.append(d + ';' + entry[0].replace('_', ';') + ';' + str(entry[1]))
                     rcnt += 1
     print('DONE! WROTE', rcnt, 'RESULTS.')
