@@ -1,3 +1,5 @@
+import time
+
 def hello_from_python ():
   return 'Hello from Python!'
 
@@ -9,6 +11,7 @@ def writeResultsToArray():
         my_list.append('AAAAAAAAAAAAAAAAAAAAAAAA')
         rcnt += 1
     print('DONE! WROTE', rcnt, 'RESULTS.')
+    #time.sleep(3)
     return my_list
 
 print(writeResultsToArray())
