@@ -1,61 +1,71 @@
 #include <iostream>
+
 #include <string>
+
 #include <boost/python.hpp>
+
 #include <boost/python/numpy.hpp>
+
 #include <vector>
 
 namespace py = boost::python;
 namespace np = boost::python::numpy;
 
-template<typename T>
-inline
-std::vector< T > py_list_to_std_vector(const boost::python::object& iterable)
-{
-	return std::vector< T >(boost::python::stl_input_iterator< T >(iterable),
-		boost::python::stl_input_iterator< T >());
+// decode a Python exception into a string
+std::string handle_pyerror() {
+    using namespace boost::python;
+    using namespace boost;
+
+    PyObject* exc, * val, * tb;
+    object formatted_list, formatted;
+    PyErr_Fetch(&exc, &val, &tb);
+    handle < > hexc(exc), hval(allow_null(val)), htb(allow_null(tb));
+    object traceback(import("traceback"));
+    if (!tb) {
+        object format_exception_only(traceback.attr("format_exception_only"));
+        formatted_list = format_exception_only(hexc, hval);
+    }
+    else {
+        object format_exception(traceback.attr("format_exception"));
+        formatted_list = format_exception(hexc, hval, htb);
+    }
+    formatted = str("\n").join(formatted_list);
+    return extract < std::string >(formatted);
+}
+
+inline std::vector<std::string> get_birdnet_array() {
+    std::vector<std::string> strVec = {};
+    Py_Initialize();
+
+    try {
+        boost::python::object birdnet_array_from_python = boost::python::import("analyze").attr("loadModel");
+
+        boost::python::list python_list_object = boost::python::extract < boost::python::list >((birdnet_array_from_python()));
+        boost::python::ssize_t n = boost::python::len(python_list_object);
+        for (boost::python::ssize_t i = 0; i < n; i++) {
+            boost::python::object element = python_list_object[i];
+            std::string single_element_string = boost::python::extract < std::string >(element);
+            std::cout << "Array element value: '" << single_element_string << "'" << std::endl;
+            strVec.push_back(single_element_string);
+        }
+        std::cout << "Amount of python array elements: '" << len(python_list_object) << "'" << std::endl;
+    }
+    catch (const boost::python::error_already_set&) {
+        if (PyErr_Occurred()) {
+            std::string msg = handle_pyerror();
+            std::cout << "Error value: '" << msg << "'" << std::endl;
+        }
+
+        boost::python::handle_exception();
+        PyErr_Clear();
+
+    }
+    return strVec;
 }
 
 int main(int argc, char* argv[]) {
-	// Initialize the Python interpreter.
-	Py_Initialize();
 
-	// Add the current directory to the path.
-	py::import("sys").attr("path").attr("append")(".");
-
-	py::object hello_from_python = py::import("mytest").attr("hello_from_python");
-	py::object array_from_python = py::import("mytest").attr("writeResultsToArray");
-
-	py::list abc = py::extract<py::list>((array_from_python()));
-	py::ssize_t n = py::len(abc);
-	for (py::ssize_t i = 0; i < n; i++) {
-		py::object elem = abc[i];
-		std::string up = py::extract<std::string>(elem);
-		std::cout << "Elem value: '" << up << "'" << std::endl;
-	}
-
-	std::string return_value1 = py::extract<std::string>(hello_from_python());
-
-	// Print out the return value.//
-	std::cout << "Return value: '" << len(abc) << "'" << std::endl;
-}
-
-boost::python::list extract_list(py::object x)
-{
-	py::extract<py::list> get_list((x));
-
-	// Make sure we always have the right idea about whether it's a list
-	bool is_list_1 = get_list.check();
-	bool is_list_2 = PyObject_IsInstance(x.ptr(), (PyObject*)&PyList_Type);
-	if (is_list_1 != is_list_2) {
-		throw std::runtime_error("is_list_1 == is_list_2 failure.");
-	}
-	return get_list();
-}
-
-template< typename T >
-inline
-std::vector< T > to_std_vector(const py::object& iterable)
-{
-	return std::vector< T >(py::stl_input_iterator< T >(iterable),
-		py::stl_input_iterator< T >());
+    std::vector<std::string> results = get_birdnet_array();
+    std::cout << "Vector length: '" << results.size() << "'" << std::endl;
+    getchar();
 }

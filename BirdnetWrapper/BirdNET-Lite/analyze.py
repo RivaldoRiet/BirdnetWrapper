@@ -15,74 +15,10 @@ import numpy as np
 import math
 import time
 import datetime
-
-def loadModel(path, sample_rate=48000):
-
-    global INPUT_LAYER_INDEX
-    global OUTPUT_LAYER_INDEX
-    global MDATA_INPUT_INDEX
-    global CLASSES
-
-    print('LOADING TF LITE MODEL...', end=' ')
-
-    # Load TFLite model and allocate tensors.
-    interpreter = tflite.Interpreter(model_path='model/BirdNET_6K_GLOBAL_MODEL.tflite')
-    interpreter.allocate_tensors()
-
-    # Get input and output tensors.
-    input_details = interpreter.get_input_details()
-    output_details = interpreter.get_output_details()
-
-    # Get input tensor index
-    INPUT_LAYER_INDEX = input_details[0]['index']
-    MDATA_INPUT_INDEX = input_details[1]['index']
-    OUTPUT_LAYER_INDEX = output_details[0]['index']
-
-    # Load labels
-    CLASSES = []
-    with open('model/labels.txt', 'r') as lfile:
-        for line in lfile.readlines():
-            CLASSES.append(line.replace('\n', ''))
-
-    print('DONE!')
-
-    print('READING AUDIO DATA...', end=' ', flush=True)
-
-    # Open file with librosa (uses ffmpeg or libav)
-    sig, rate = librosa.load(path, sr=sample_rate, mono=True, res_type='kaiser_fast')
-
-    # Split audio into 3-second chunks
-    chunks = splitSignal(sig, rate, 0.0)
-
-    print('DONE! READ', str(len(chunks)), 'CHUNKS.')
-
-    my_date = datetime.date.today()  # current date
-    year, week_num, day_of_week = my_date.isocalendar()
-    detections = {}
-    start = time.time()
-    print('ANALYZING AUDIO...', end=' ', flush=True)
-
-    # Convert and prepare metadata
-    mdata = convertMetadata(np.array([52.379189, -4.899431, week_num]))
-    mdata = np.expand_dims(mdata, 0)
-
-    # Parse every chunk
-    pred_start = 0.0
-    for c in chunks:
-        # Prepare as input signal
-        sig = np.expand_dims(c, 0)
-
-        # Make prediction
-        p = predict([sig, mdata], interpreter, 1)
-
-        # Save result and timestamp
-        pred_end = pred_start + 3.0
-        detections[str(pred_start) + ';' + str(pred_end)] = p
-        pred_start = pred_end - 0.0
-
-    print('DONE! Time', int((time.time() - start) * 10) / 10.0, 'SECONDS')
-
-    return detections
+import warnings
+warnings.filterwarnings("ignore")
+global WHITE_LIST
+WHITE_LIST = []
 
 def loadCustomSpeciesList(path):
 
@@ -218,9 +154,99 @@ def writeResultsToFile(detections, min_conf, path):
                     rcnt += 1
     print('DONE! WROTE', rcnt, 'RESULTS.')
 
-def main():
+def loadModel(path="pimpelmees.wav", sample_rate=48000):
 
-    global WHITE_LIST
+    global INPUT_LAYER_INDEX
+    global OUTPUT_LAYER_INDEX
+    global MDATA_INPUT_INDEX
+    global CLASSES
+
+    print('LOADING TF LITE MODEL...', end=' ')
+    print("Path at terminal when executing this file")
+    print(os.getcwd() + "\n")
+
+    print("This file path, relative to os.getcwd()")
+    print(__file__ + "\n")
+
+    print("This file full path (following symlinks)")
+    full_path = os.path.realpath(__file__)
+    print(full_path + "\n")
+
+    print("This file directory only")
+    print(os.path.dirname(full_path))
+    print("\n")
+    arr = os.listdir()
+    print(arr)
+
+    # Load TFLite model and allocate tensors.
+    interpreter = tflite.Interpreter(model_path='model.tflite')
+    interpreter.allocate_tensors()
+
+    # Get input and output tensors.
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+
+    # Get input tensor index
+    INPUT_LAYER_INDEX = input_details[0]['index']
+    MDATA_INPUT_INDEX = input_details[1]['index']
+    OUTPUT_LAYER_INDEX = output_details[0]['index']
+
+    # Load labels
+    CLASSES = []
+    with open('labels.txt', 'r') as lfile:
+        for line in lfile.readlines():
+            CLASSES.append(line.replace('\n', ''))
+
+    print('DONE!')
+
+    print('READING AUDIO DATA...', end=' ', flush=True)
+
+    # Open file with librosa (uses ffmpeg or libav)
+    sig, rate = librosa.load(path, sr=sample_rate, mono=True, res_type='kaiser_fast')
+
+    # Split audio into 3-second chunks
+    chunks = splitSignal(sig, rate, 0.0)
+
+    print('DONE! READ', str(len(chunks)), 'CHUNKS.')
+
+    my_date = datetime.date.today()  # current date
+    year, week_num, day_of_week = my_date.isocalendar()
+    detections = {}
+    start = time.time()
+    print('ANALYZING AUDIO...', end=' ', flush=True)
+
+    # Convert and prepare metadata
+    mdata = convertMetadata(np.array([52.379189, -4.899431, week_num]))
+    mdata = np.expand_dims(mdata, 0)
+
+    # Parse every chunk
+    pred_start = 0.0
+    for c in chunks:
+        # Prepare as input signal
+        sig = np.expand_dims(c, 0)
+
+        # Make prediction
+        p = predict([sig, mdata], interpreter, 1)
+
+        # Save result and timestamp
+        pred_end = pred_start + 3.0
+        detections[str(pred_start) + ';' + str(pred_end)] = p
+        pred_start = pred_end - 0.0
+
+    print('DONE! Time', int((time.time() - start) * 10) / 10.0, 'SECONDS')
+    
+    my_list = list()
+    rcnt = 0
+    for d in detections:
+            for entry in detections[d]:
+                if entry[1] >= 0.1 and (entry[0] in WHITE_LIST or len(WHITE_LIST) == 0):
+                    my_list.append(d + ';' + entry[0].replace('_', ';') + ';' + str(entry[1]))
+                    rcnt += 1
+    print('DONE! WROTE', rcnt, 'RESULTS.')
+    #time.sleep(3)
+    return my_list
+
+def main():
 
     # Parse passed arguments
     parser = argparse.ArgumentParser()
@@ -236,20 +262,14 @@ def main():
 
     args = parser.parse_args()
 
-    # Load custom species list
-    if not args.custom_list == '':
-        WHITE_LIST = loadCustomSpeciesList(args.custom_list)
-    else:
-        WHITE_LIST = []
-
+    detections = loadModel()
     # Process audio data and get detections
     week = max(1, min(args.week, 48))
     sensitivity = max(0.5, min(1.0 - (args.sensitivity - 1.0), 1.5))
-    detections = loadModel(args.i)
 
     # Write detections to output file
     min_conf = max(0.01, min(args.min_conf, 0.99))
-    writeResultsToFile(detections, min_conf, args.o)
+    #writeResultsToFile(detections, min_conf, args.o)
 
 if __name__ == '__main__':
 
