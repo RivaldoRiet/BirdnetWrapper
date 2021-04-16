@@ -19,18 +19,6 @@ import warnings
 warnings.filterwarnings("ignore")
 global WHITE_LIST
 WHITE_LIST = []
-    
-def writeResultsToArray():
-    my_list = list()
-    rcnt = 0
-    for x in range(0, 15):
-        my_list.append('AAAAAAAAAAAAAAAAAAAAAAAA')
-        rcnt += 1
-    print('DONE! WROTE', rcnt, 'RESULTS.')
-    #time.sleep(3)
-    return my_list
-
-print(writeResultsToArray())
 
 def loadCustomSpeciesList(path):
 
@@ -257,8 +245,6 @@ def loadModel(path="pimpelmees.wav", sample_rate=48000):
     print('DONE! WROTE', rcnt, 'RESULTS.')
     #time.sleep(3)
     return my_list
-
-loadModel()
 
 def main():
 

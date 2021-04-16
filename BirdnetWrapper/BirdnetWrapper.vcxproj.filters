@@ -19,9 +19,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="mytest.py">
-      <Filter>Resource Files</Filter>
-    </Resource>
-  </ItemGroup>
 </Project>
