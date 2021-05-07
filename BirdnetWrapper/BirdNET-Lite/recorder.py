@@ -19,6 +19,7 @@ FRAMES = np.array([], dtype='float32')
 INTERPRETER = None
 INPUT_LAYER_INDEX = -1
 OUTPUT_LAYER_INDEX = -1
+my_list = list()
 
 def openStream():       
 
@@ -252,6 +253,9 @@ def run():
     recordWorker = Thread(target=record, args=())
     recordWorker.start()
 
+    if len(my_list) >= 10:
+        my_list.clear()
+
     # Keep running...
     log.p(('STARTING ANALYSIS'))
     while not cfg['KILL_ALL']:
@@ -263,14 +267,21 @@ def run():
 
             # Save results
             if not p == None:
-                my_list = list()
+                utc = time.strftime('%H:%M:%S', time.localtime(p['timestamp']))
+                for detection in p['detections']:
+                    log.p((utc, int((p['time_for_prediction']) * 1000) / 1000.0), new_line=False)
+                    log.p((detection['species'], detection['score']), new_line=False)
+                    log.p('')
+
                 rcnt = 0
                 for detection in p['detections']:
-                    my_list.append(detection['species'] + ';' + detection['score'] + ';')
+                    my_list.append(detection['species'] + ';' + str(detection['score']) + ';')
                     rcnt += 1
                 print('DONE! WROTE', rcnt, 'RESULTS.')
+                print('List length: ' + str(len(my_list)))
+                if len(my_list) >= 10:
+                    return my_list
                 #time.sleep(3)
-                return my_list
 
                 # Sleep if we are too fast
                 if 'time_for_prediction' in p:

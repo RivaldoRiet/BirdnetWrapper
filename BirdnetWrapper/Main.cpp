@@ -3,6 +3,8 @@
 #include <boost/python.hpp>
 #include <boost/python/numpy.hpp>
 #include <vector>
+#include <chrono>
+#include <thread>
 
 namespace py = boost::python;
 namespace np = boost::python::numpy;
@@ -35,16 +37,18 @@ inline std::vector<std::string> get_birdnet_array() {
 
     try {
         boost::python::object birdnet_array_from_python = boost::python::import("recorder").attr("run");
-
-        boost::python::list python_list_object = boost::python::extract < boost::python::list >((birdnet_array_from_python()));
-        boost::python::ssize_t n = boost::python::len(python_list_object);
-        for (boost::python::ssize_t i = 0; i < n; i++) {
-            boost::python::object element = python_list_object[i];
-            std::string single_element_string = boost::python::extract < std::string >(element);
-            std::cout << "Array element value: '" << single_element_string << "'" << std::endl;
-            strVec.push_back(single_element_string);
+        while (true) {
+            boost::python::list python_list_object = boost::python::extract < boost::python::list >((birdnet_array_from_python()));
+            boost::python::ssize_t n = boost::python::len(python_list_object);
+            for (boost::python::ssize_t i = 0; i < n; i++) {
+                boost::python::object element = python_list_object[i];
+                std::string single_element_string = boost::python::extract < std::string >(element);
+                std::cout << "Array element value: '" << single_element_string << "'" << std::endl;
+                strVec.push_back(single_element_string);
+            }
+            std::cout << "Amount of python array elements: '" << len(python_list_object) << "'" << std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
-        std::cout << "Amount of python array elements: '" << len(python_list_object) << "'" << std::endl;
     }
     catch (const boost::python::error_already_set&) {
         if (PyErr_Occurred()) {
