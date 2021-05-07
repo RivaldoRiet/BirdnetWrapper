@@ -1,11 +1,7 @@
 #include <iostream>
-
 #include <string>
-
 #include <boost/python.hpp>
-
 #include <boost/python/numpy.hpp>
-
 #include <vector>
 
 namespace py = boost::python;
@@ -38,7 +34,7 @@ inline std::vector<std::string> get_birdnet_array() {
     Py_Initialize();
 
     try {
-        boost::python::object birdnet_array_from_python = boost::python::import("analyze").attr("loadModel");
+        boost::python::object birdnet_array_from_python = boost::python::import("recorder").attr("run");
 
         boost::python::list python_list_object = boost::python::extract < boost::python::list >((birdnet_array_from_python()));
         boost::python::ssize_t n = boost::python::len(python_list_object);
