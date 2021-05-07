@@ -75,11 +75,12 @@ def loadModel(model_file, config_file):
 
     global INPUT_LAYER_INDEX
     global OUTPUT_LAYER_INDEX
+    print('LOADING TF LITE MODEL...', end=' ')
 
-    log.p('LOADING TF LITE MODEL...', new_line=False)
+    log.p('LOADING TF LITE MODEL...', new_line=True)
 
     # Load TFLite model and allocate tensors.
-    interpreter = tflite.Interpreter(model_path=model_file)
+    interpreter = tflite.Interpreter(model_path='model.tflite')
     interpreter.allocate_tensors()    
 
     # Get input and output tensors.
@@ -89,9 +90,11 @@ def loadModel(model_file, config_file):
     # Get input tensor index
     INPUT_LAYER_INDEX = input_details[0]['index']
     OUTPUT_LAYER_INDEX = output_details[0]['index']
+    
+    log.p('LOADING CONFIG FILE...', new_line=True)
 
     # Load model-specific config
-    cfg['LOAD'](config_file, ['CLASSES',
+    cfg['LOAD']('model.json', ['CLASSES',
                               'SPEC_TYPE',
                               'MAGNITUDE_SCALE',
                               'WIN_LEN',
@@ -109,7 +112,7 @@ def loadModel(model_file, config_file):
     return interpreter    
 
 def getSpeciesList():
-
+    log.p('done loading species', new_line=True)
     # Add selected species to white list
     cfg['WHITE_LIST'] = [# Species that have a sound file
                          'Sturnus vulgaris_European Starling',
@@ -237,10 +240,12 @@ def analyzeStream(interpreter):
 def run():
 
     # Load model
-    interpreter = loadModel(cfg['MODEL_PATH'], cfg['CONFIG_PATH'])
-
+    print('Starting')
+    
     # Load species list
     getSpeciesList()
+    print('Config: ' + cfg['MODEL_PATH'] + ' - ' + cfg['CONFIG_PATH'])
+    interpreter = loadModel(cfg['MODEL_PATH'], cfg['CONFIG_PATH'])
 
     # Start recording
     log.p(('STARTING RECORDING WORKER'))
@@ -258,14 +263,14 @@ def run():
 
             # Save results
             if not p == None:
-                    my_list = list()
-                    rcnt = 0
-                    for detection in p['detections']:
-                        my_list.append(detection['species'] + ';' + detection['score'] + ';')
-                        rcnt += 1
-                    print('DONE! WROTE', rcnt, 'RESULTS.')
-                    #time.sleep(3)
-                    return my_list
+                my_list = list()
+                rcnt = 0
+                for detection in p['detections']:
+                    my_list.append(detection['species'] + ';' + detection['score'] + ';')
+                    rcnt += 1
+                print('DONE! WROTE', rcnt, 'RESULTS.')
+                #time.sleep(3)
+                return my_list
 
                 # Sleep if we are too fast
                 if 'time_for_prediction' in p:
