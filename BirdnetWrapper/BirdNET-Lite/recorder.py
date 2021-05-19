@@ -277,9 +277,9 @@ def run():
                 for detection in p['detections']:
                     my_list.append(detection['species'] + ';' + str(detection['score']) + ';')
                     rcnt += 1
-                print('DONE! WROTE', rcnt, 'RESULTS.')
-                print('List length: ' + str(len(my_list)))
                 if len(my_list) >= 10:
+                    print('DONE! WROTE', rcnt, 'RESULTS.')
+                    print('List length: ' + str(len(my_list)))
                     return my_list
                 #time.sleep(3)
 
