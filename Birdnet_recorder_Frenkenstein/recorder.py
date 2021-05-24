@@ -278,7 +278,7 @@ def analyzeStream(interpreter):
 
     # Get signal from FRAMES
     sig = FRAMES.copy()
-    print('sig length: ' + str(len(sig)))
+    print('Sample length: ' + str(len(sig)) + '/' + str(int(cfg['SAMPLE_RATE'] * cfg['SPEC_LENGTH'])))
     # Do we have enough frames?
     if len(sig) < cfg['SAMPLE_RATE'] * cfg['SPEC_LENGTH']:
         return None
