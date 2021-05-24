@@ -283,8 +283,6 @@ def analyzeStream(interpreter):
     if len(sig) < cfg['SAMPLE_RATE'] * cfg['SPEC_LENGTH']:
         return None
     
-    print('sig length: ' + str(len(sig)))
-    
     # Split audio into 3-second chunks
     chunks = splitSignal(sig, cfg['SAMPLE_RATE'], 0.0)
     print('DONE! READ', str(len(chunks)), 'CHUNKS.')
@@ -296,7 +294,8 @@ def analyzeStream(interpreter):
     print('ANALYZING AUDIO...', end=' ', flush=True)
 
     # Convert and prepare metadata
-    mdata = convertMetadata(np.array([52.379189, -4.899431, week_num]))
+    # mdata = convertMetadata(np.array([52.379189, -4.899431, week_num])) # amsterdam
+    mdata = convertMetadata(np.array([51.6978, 5.3037, week_num])) # den bosch
     mdata = np.expand_dims(mdata, 0)
 
     # Parse every chunk

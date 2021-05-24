@@ -53,7 +53,7 @@ config = {
     'SPEC_FMAX': 15000,
 
     # Settings for spectrogram extraction
-    'SPEC_LENGTH': 9.0,
+    'SPEC_LENGTH': 6.0,
     'SPEC_OVERLAP': 2.5,
     'SPEC_MINLEN': 1.0,
 
