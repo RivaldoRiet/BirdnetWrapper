@@ -323,7 +323,6 @@ def analyzeStream(interpreter):
                     print(d + ';' + entry[0].replace('_', ';') + ';' + str(entry[1]))
                     my_list.append(d + ';' + entry[0].replace('_', ';') + ';' + str(entry[1]))
                     rcnt += 1
-    print('DONE! WROTE', rcnt, 'RESULTS.')
     #time.sleep(3)
     return my_list
 
@@ -345,7 +344,7 @@ def run():
     while not cfg['KILL_ALL']:
 
         try:
-            time.sleep(3.4)
+            time.sleep(1)
             # Make prediction
             p = analyzeStream(interpreter)
 
