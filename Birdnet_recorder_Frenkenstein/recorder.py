@@ -33,7 +33,7 @@ def openStream():
                 print("Input Device id ", i, " - ", paudio.get_device_info_by_host_api_device_index(0, i).get('name'))
         # Stream Settings
         stream = paudio.open(format=pyaudio.paFloat32,
-                            input_device_index=1,
+                            input_device_index=0,
                             channels=1,
                             rate=cfg['SAMPLE_RATE'],
                             input=True,
@@ -110,12 +110,25 @@ def loadModel(model_file, config_file):
 
 def getSpeciesList():
 
-    CLASSES = []
-    with open('labels.txt', 'r') as lfile:
-        for line in lfile.readlines():
-            CLASSES.append(line.replace('\n', ''))
-            
-    cfg['WHITE_LIST'] = CLASSES
+    # Add selected species to white list
+    cfg['WHITE_LIST'] = [# Species that have a sound file
+                         'Sturnus vulgaris_European Starling',
+                         'Delichon urbicum_Common House-Martin',
+                         'Linaria cannabina_Eurasian Linnet',
+                         'Ficedula hypoleuca_European Pied Flycatcher',
+                         'Regulus regulus_Goldcrest',
+                         'Emberiza citrinella_Yellowhammer',
+                         'Cyanistes caeruleus_Eurasian Blue Tit',
+                         'Phylloscopus collybita_Common Chiffchaff',
+                         'Carduelis carduelis_European Goldfinch',
+                         # Additional species
+                         'Parus major_Great Tit',
+                         'Passer domesticus_House Sparrow',
+                         'Erithacus rubecula_European Robin',
+                         'Phoenicurus ochruros_Black Redstart',
+                         'Fringilla coelebs_Common Chaffinch',
+                         'Turdus merula_Eurasian Blackbird'
+                        ]
 
 def getInput(sig):
 
@@ -178,10 +191,7 @@ def predict(sample, interpreter):
     p_labels = {}  
     for i in range(p_pool.shape[0]):
         label = cfg['CLASSES'][i]
-        if cfg['CLASSES'][i] in cfg['WHITE_LIST']:
-            p_labels[label] = p_pool[i]
-        else:
-            p_labels[label] = 0.0
+        p_labels[label] = p_pool[i]
 
     # Sort by score
     p_sorted =  sorted(p_labels.items(), key=operator.itemgetter(1), reverse=True)
