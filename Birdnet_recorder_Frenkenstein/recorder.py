@@ -6,6 +6,8 @@ from threading import Thread
 
 import numpy as np
 import pyaudio
+import datetime
+import math
 
 from tensorflow import lite as tflite
 
@@ -75,12 +77,13 @@ def loadModel(model_file, config_file):
 
     global INPUT_LAYER_INDEX
     global OUTPUT_LAYER_INDEX
-
-    log.p('LOADING TF LITE MODEL...', new_line=False)
+    global MDATA_INPUT_INDEX
+    global CLASSES
 
     # Load TFLite model and allocate tensors.
-    interpreter = tflite.Interpreter(model_path=model_file)
-    interpreter.allocate_tensors()    
+    #interpreter = tflite.Interpreter(model_path='model.tflite')
+    interpreter = tflite.Interpreter(model_path='model.tflite')
+    interpreter.allocate_tensors()
 
     # Get input and output tensors.
     input_details = interpreter.get_input_details()
@@ -88,23 +91,14 @@ def loadModel(model_file, config_file):
 
     # Get input tensor index
     INPUT_LAYER_INDEX = input_details[0]['index']
+    MDATA_INPUT_INDEX = input_details[1]['index']
     OUTPUT_LAYER_INDEX = output_details[0]['index']
 
-    # Load model-specific config
-    cfg['LOAD'](config_file, ['CLASSES',
-                              'SPEC_TYPE',
-                              'MAGNITUDE_SCALE',
-                              'WIN_LEN',
-                              'SAMPLE_RATE',
-                              'SPEC_FMIN',
-                              'SPEC_FMAX',
-                              'SPEC_LENGTH',
-                              'INPUT_TYPE',
-                              'INPUT_SHAPE'])
-
-    log.p('DONE!')
-    log.p(('INPUT LAYER INDEX:', INPUT_LAYER_INDEX))
-    log.p(('OUTPUT LAYER INDEX:', OUTPUT_LAYER_INDEX))
+    # Load labels
+    CLASSES = []
+    with open('labels.txt', 'r') as lfile:
+        for line in lfile.readlines():
+            CLASSES.append(line.replace('\n', ''))
 
     return interpreter    
 
@@ -130,6 +124,23 @@ def getSpeciesList():
                          'Turdus merula_Eurasian Blackbird'
                         ]
 
+def convertMetadata(m):
+
+    # Convert week to cosine
+    if m[2] >= 1 and m[2] <= 48:
+        m[2] = math.cos(math.radians(m[2] * 7.5)) + 1 
+    else:
+        m[2] = -1
+
+    # Add binary mask
+    mask = np.ones((3,))
+    if m[0] == -1 or m[1] == -1:
+        mask = np.zeros((3,))
+    if m[2] == -1:
+        mask[2] = 0.0
+
+    return np.concatenate([m, mask])
+
 def getInput(sig):
 
     if cfg['INPUT_TYPE'] == 'raw':        
@@ -146,7 +157,7 @@ def getInput(sig):
                             spec_type=cfg['SPEC_TYPE'],
                             magnitude_scale=cfg['MAGNITUDE_SCALE'],
                             bandpass=True,
-                            shape=(cfg['INPUT_SHAPE'][0], cfg['INPUT_SHAPE'][1]))
+                            shape=(64, 384))
 
         # DEBUG: Save spec?
         if cfg['DEBUG_MODE']:
@@ -156,6 +167,28 @@ def getInput(sig):
         sample = image.prepare(spec)
 
     return sample
+
+def splitSignal(sig, rate, overlap, seconds=3.0, minlen=1.5):
+
+    # Split signal with overlap
+    sig_splits = []
+    for i in range(0, len(sig), int((seconds - overlap) * rate)):
+        split = sig[i:i + int(seconds * rate)]
+
+        # End of signal?
+        if len(split) < int(minlen * rate):
+            break
+        
+        # Signal chunk too short? Fill with zeros.
+        if len(split) < int(rate * seconds):
+            temp = np.zeros((int(rate * seconds)))
+            temp[:len(split)] = split
+            split = temp
+        
+        sig_splits.append(split)
+
+    return sig_splits
+
 
 def flat_sigmoid(x, sensitivity=-1):
     return 1 / (1.0 + np.exp(sensitivity * x))
@@ -176,27 +209,67 @@ def predictionPooling(p, sensitivity=-1, mode='avg'):
     p_pool[p_pool > 1.0] = 1.0
 
     return p_pool
+    
+    
+def custom_sigmoid(x, sensitivity=1.0):
+    return 1 / (1.0 + np.exp(-sensitivity * x))
 
-def predict(sample, interpreter):    
+def predict(sample, interpreter, sensitivity):
 
     # Make a prediction
-    interpreter.set_tensor(INPUT_LAYER_INDEX, np.array(sample, dtype='float32'))
+    interpreter.set_tensor(INPUT_LAYER_INDEX, np.array(sample[0], dtype='float32'))
+    interpreter.set_tensor(MDATA_INPUT_INDEX, np.array(sample[1], dtype='float32'))
     interpreter.invoke()
-    prediction = interpreter.get_tensor(OUTPUT_LAYER_INDEX)
+    prediction = interpreter.get_tensor(OUTPUT_LAYER_INDEX)[0]
 
-    # Prediction pooling
-    p_pool = predictionPooling(prediction, cfg['SENSITIVITY'])
+    # Apply custom sigmoid
+    p_sigmoid = custom_sigmoid(prediction, sensitivity)
 
-    # Get label and scores for pooled predictions  
-    p_labels = {}  
-    for i in range(p_pool.shape[0]):
-        label = cfg['CLASSES'][i]
-        p_labels[label] = p_pool[i]
+    # Get label and scores for pooled predictions
+    p_labels = dict(zip(CLASSES, p_sigmoid))
 
     # Sort by score
-    p_sorted =  sorted(p_labels.items(), key=operator.itemgetter(1), reverse=True)
+    p_sorted = sorted(p_labels.items(), key=operator.itemgetter(1), reverse=True)
+
+    # Remove species that are on blacklist
+    for i in range(min(10, len(p_sorted))):
+        if p_sorted[i][0] in ['Human_Human', 'Non-bird_Non-bird', 'Noise_Noise']:
+            p_sorted[i] = (p_sorted[i][0], 0.0)
+
+    # Only return first the top ten results
+    return p_sorted[:10]
     
-    return p_sorted
+    
+def analyzeAudioData(chunks,interpreter):
+
+    my_date = datetime.date.today() # current date
+    year, week_num, day_of_week = my_date.isocalendar()
+    detections = {}
+    start = time.time()
+    print('ANALYZING AUDIO...', end=' ', flush=True)
+
+    # Convert and prepare metadata
+    mdata = convertMetadata(np.array([52.379189, -4.899431, week_num]))
+    mdata = np.expand_dims(mdata, 0)
+
+    # Parse every chunk
+    pred_start = 0.0
+    for c in chunks:
+
+        # Prepare as input signal
+        sig = np.expand_dims(c, 0)
+
+        # Make prediction
+        p = predict([sig, mdata], interpreter, 1)
+
+        # Save result and timestamp
+        pred_end = pred_start + 3.0
+        detections[str(pred_start) + ';' + str(pred_end)] = p
+        pred_start = pred_end - 0.0
+
+    print('DONE! Time', int((time.time() - start) * 10) / 10.0, 'SECONDS')
+
+    return detections
 
 def analyzeStream(interpreter):
 
@@ -209,50 +282,50 @@ def analyzeStream(interpreter):
     # Do we have enough frames?
     if len(sig) < cfg['SAMPLE_RATE'] * cfg['SPEC_LENGTH']:
         return None
-
-    # Prepare as input
-    sample = getInput(sig) 
-
-    # Make prediction
-    p = predict(sample, interpreter)
-
-    # Sort trough detections
-    d = []
-    for entry in p:
-
-        # Store detections with confidence above threshold
-        if entry[1] >= cfg['MIN_CONFIDENCE'] and p.index(entry) < 2:            
-
-            # Save detection if it is a bird
-            d.append({'species': entry[0], 'score': int(entry[1] * 100) / 100.0})
-
-    return {'detections': d, 
-            'audio': np.array(sig * 32767, dtype='int16'), 
-            'timestamp': time.time(),
-            'time_for_prediction': time.time() - start}
-
-def save(p):
-
-    # Time in UTC
-    utc = time.strftime('%H:%M:%S', time.localtime(p['timestamp']))
     
-    # Log    
-    for detection in p['detections']:
-        log.p((utc, int((p['time_for_prediction']) * 1000) / 1000.0), new_line=False)
-        log.p((detection['species'], detection['score']), new_line=False)
-        log.p('')
+    print('sig length: ' + str(len(sig)))
+    
+    # Split audio into 3-second chunks
+    chunks = splitSignal(sig, cfg['SAMPLE_RATE'], 0.0)
+    print('DONE! READ', str(len(chunks)), 'CHUNKS.')
 
-    # Save JSON response data
-    data = {'prediction': {'0':{}}, 'time': p['time_for_prediction']}
-    with open('stream_analysis.json', 'w') as jfile:
+    my_date = datetime.date.today()  # current date
+    year, week_num, day_of_week = my_date.isocalendar()
+    detections = {}
+    start = time.time()
+    print('ANALYZING AUDIO...', end=' ', flush=True)
 
-        for i in range(len(p['detections'])):
-            label = p['detections'][i]['species']
-            data['prediction']['0'][str(i)] = {'score': str(p['detections'][i]['score']), 'species': label}
-            if i > 25:
-                break
+    # Convert and prepare metadata
+    mdata = convertMetadata(np.array([52.379189, -4.899431, week_num]))
+    mdata = np.expand_dims(mdata, 0)
 
-        json.dump(data, jfile)
+    # Parse every chunk
+    pred_start = 0.0
+    for c in chunks:
+        # Prepare as input signal
+        sig = np.expand_dims(c, 0)
+
+        # Make prediction
+        p = predict([sig, mdata], interpreter, 1)
+
+        # Save result and timestamp
+        pred_end = pred_start + 3.0
+        detections[str(pred_start) + ';' + str(pred_end)] = p
+        pred_start = pred_end - 0.0
+
+    print('DONE! Time', int((time.time() - start) * 10) / 10.0, 'SECONDS')
+    
+    my_list = list()
+    rcnt = 0
+    for d in detections:
+            for entry in detections[d]:
+                if entry[1] >= 0.1:
+                    print(d + ';' + entry[0].replace('_', ';') + ';' + str(entry[1]))
+                    my_list.append(d + ';' + entry[0].replace('_', ';') + ';' + str(entry[1]))
+                    rcnt += 1
+    print('DONE! WROTE', rcnt, 'RESULTS.')
+    #time.sleep(3)
+    return my_list
 
 def run():
 
@@ -272,13 +345,12 @@ def run():
     while not cfg['KILL_ALL']:
 
         try:
-
+            time.sleep(3.4)
             # Make prediction
             p = analyzeStream(interpreter)
 
             # Save results
             if not p == None:
-                save(p)
 
                 # Sleep if we are too fast
                 if 'time_for_prediction' in p:

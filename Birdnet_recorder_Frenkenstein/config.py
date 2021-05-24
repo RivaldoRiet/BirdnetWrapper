@@ -53,12 +53,12 @@ config = {
     'SPEC_FMAX': 15000,
 
     # Settings for spectrogram extraction
-    'SPEC_LENGTH': 3.0,
+    'SPEC_LENGTH': 9.0,
     'SPEC_OVERLAP': 2.5,
     'SPEC_MINLEN': 1.0,
 
     # Model hyperperams
-    'INPUT_TYPE': 'spec',
+    'INPUT_TYPE': 'raw',
 
     # Soundscape analysis
     'MODEL_PATH': os.path.join(BASE_PATH, 'model', 'BirdNET_1000_TF_ResNet_50K_model.tflite'),
