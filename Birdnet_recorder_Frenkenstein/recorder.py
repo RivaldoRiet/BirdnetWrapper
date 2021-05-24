@@ -272,13 +272,13 @@ def analyzeAudioData(chunks,interpreter):
     return detections
 
 def analyzeStream(interpreter):
-
+    global FRAMES
     # Time
     start = time.time()
 
     # Get signal from FRAMES
     sig = FRAMES.copy()
-
+    print('sig length: ' + str(len(sig)))
     # Do we have enough frames?
     if len(sig) < cfg['SAMPLE_RATE'] * cfg['SPEC_LENGTH']:
         return None
@@ -313,7 +313,10 @@ def analyzeStream(interpreter):
         detections[str(pred_start) + ';' + str(pred_end)] = p
         pred_start = pred_end - 0.0
 
+    
     print('DONE! Time', int((time.time() - start) * 10) / 10.0, 'SECONDS')
+    
+    FRAMES = np.array([], dtype='float32')
     
     my_list = list()
     rcnt = 0
@@ -344,7 +347,7 @@ def run():
     while not cfg['KILL_ALL']:
 
         try:
-            time.sleep(1)
+            #time.sleep(1)
             # Make prediction
             p = analyzeStream(interpreter)
 
