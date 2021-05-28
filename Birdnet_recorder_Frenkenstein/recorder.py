@@ -35,7 +35,7 @@ def openStream():
                 print("Input Device id ", i, " - ", paudio.get_device_info_by_host_api_device_index(0, i).get('name'))
         # Stream Settings
         stream = paudio.open(format=pyaudio.paFloat32,
-                            input_device_index=0,
+                            input_device_index=1,
                             channels=1,
                             rate=cfg['SAMPLE_RATE'],
                             input=True,
