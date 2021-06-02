@@ -5,6 +5,14 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <sstream>
+#include <map>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
+using boost::property_tree::ptree;
+using boost::property_tree::read_json;
+using boost::property_tree::write_json;
 
 namespace py = boost::python;
 namespace np = boost::python::numpy;
@@ -27,7 +35,7 @@ std::string handle_pyerror() {
         object format_exception(traceback.attr("format_exception"));
         formatted_list = format_exception(hexc, hval, htb);
     }
-    formatted = str("\n").join(formatted_list);
+    formatted = boost::python::str("\n").join(formatted_list);
     return extract < std::string >(formatted);
 }
 
@@ -63,9 +71,38 @@ inline std::vector<std::string> get_birdnet_array() {
     return strVec;
 }
 
+
+void example() {
+    // Write json.
+    ptree pt;
+    pt.put("foo", "bar");
+    std::ostringstream buf;
+    write_json(buf, pt, false);
+    std::string json = buf.str(); // {"foo":"bar"}
+    std::cout << "JSON value: '" << json << "'" << std::endl;
+
+    // Read json.
+    ptree pt2;
+    std::istringstream is(json);
+    read_json(is, pt2);
+    std::string foo = pt2.get<std::string>("foo");
+}
+
+std::string map2json(const std::map<std::string, std::string>& map) {
+    ptree pt;
+    for (auto& entry : map)
+        pt.put(entry.first, entry.second);
+    std::ostringstream buf;
+    write_json(buf, pt, false);
+    return buf.str();
+}
+
 int main(int argc, char* argv[]) {
 
-    std::vector<std::string> results = get_birdnet_array();
-    std::cout << "Vector length: '" << results.size() << "'" << std::endl;
+   // std::vector<std::string> results = get_birdnet_array();
+    //std::cout << "Vector length: '" << results.size() << "'" << std::endl;
+    example();
     getchar();
 }
+
+
