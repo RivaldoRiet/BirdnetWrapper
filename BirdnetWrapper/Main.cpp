@@ -80,23 +80,7 @@ void example() {
     write_json(buf, pt, false);
     std::string json = buf.str(); // {"foo":"bar"}
     std::cout << "JSON value: '" << json << "'" << std::endl;
-
-    // Read json.
-    ptree pt2;
-    std::istringstream is(json);
-    read_json(is, pt2);
-    std::string foo = pt2.get<std::string>("foo");
 }
-
-std::string map2json(const std::map<std::string, std::string>& map) {
-    ptree pt;
-    for (auto& entry : map)
-        pt.put(entry.first, entry.second);
-    std::ostringstream buf;
-    write_json(buf, pt, false);
-    return buf.str();
-}
-
 int main(int argc, char* argv[]) {
 
    // std::vector<std::string> results = get_birdnet_array();
