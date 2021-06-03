@@ -1,0 +1,11 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Folders
+logs/
+.vs/
+
+# Files
+stream_analysis.json

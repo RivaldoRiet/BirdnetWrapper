@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="de">
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="google" content="notranslate">
+
+    <!-- Bootstrap & CSS-->
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="static/css/style.css">
+
+    <!-- Additional JavaScript -->
+    <script src="static/js/jquery-3.4.1.min.js"></script>
+    <script src="static/js/chroma.js"></script>
+    <script src="static/js/audioViewer.js"></script>
+    <script src="static/js/stream.js"></script>
+
+    <title>BirdNET Demo</title>
+</head>
+
+<body>
+
+    <!-- Title bar -->
+    <div class="container-fluid bg-dark text-white">
+        <div class="row p-2">
+            <div class="col">
+                <h5>BirdNET - Vogelstimmen automatisch erkennen</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->    
+    <div class="container-fluid" id="content">
+
+        <!-- Spectrogram -->
+        <div class="row border-10 border-bottom border-dark" id="spec-holder">            
+            <canvas id="spec"></canvas>
+        </div>
+
+        <!-- Audio player -->
+        <div class="row d-none">  
+            <!--audio controls id='player' preload='none' crossorigin='anonymous' id='audio_source_source' src='http://innonuc.informatik.tu-chemnitz.de:8080/stream'></audio-->
+            <audio controls id='player' preload='none' crossorigin='anonymous' id='audio_source_source' src='http://localhost:8080/stream'></audio>
+        </div>
+
+        <!-- Card row -->
+        <div class="row p-2 d-none" id="d1">
+            <div class="card w-100">
+                <div class="card-header bg-dark text-white h4" id="d1-header"></div>
+                <div class="row no-gutters p-1" style="flex-wrap: nowrap;">
+                    <div class="col-4">
+                        <img src="static/img/Cyanistes caeruleus_Eurasian Blue Tit.jpg" class="rounded" id="d1-img">
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body p-1 pl-4">
+                            <h4>Wahrscheinlichkeit:</h4>
+                            <p class="card-text text-left display-1"  id="d1-score"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row p-2 d-none" id="d2">
+            <div class="card w-100">
+                <div class="card-header bg-dark text-white h4" id="d2-header"></div>
+                <div class="row no-gutters p-1" style="flex-wrap: nowrap;">
+                    <div class="col-4">
+                        <img src="static/img/Cyanistes caeruleus_Eurasian Blue Tit.jpg" class="rounded" id="d2-img">
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body p-1 pl-4">
+                            <h4>Wahrscheinlichkeit:</h4>
+                            <p class="card-text text-left display-1" id="d2-score"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
+        
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="static/js/bootstrap.bundle.min.js"></script>
+
+    </body>
+</html>
