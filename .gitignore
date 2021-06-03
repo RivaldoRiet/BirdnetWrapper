@@ -204,6 +204,7 @@ UpgradeLog*.htm
 # SQL Server files
 *.mdf
 *.ldf
+*.tflite
 
 # Business Intelligence projects
 *.rdl.data
