@@ -108,7 +108,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)BirdnetWrapper\BirdNET-Lite" "$(TargetDir)" /y /e</Command>
+      <Command>xcopy "$(SolutionDir)BirdnetWrapper\Birdnet_recorder" "$(TargetDir)" /y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -133,7 +133,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)BirdnetWrapper\BirdNET-Lite" "$(TargetDir)" /y /e</Command>
+      <Command>xcopy "$(SolutionDir)BirdnetWrapper\Birdnet_recorder" "$(TargetDir)" /y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -154,7 +154,7 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)BirdnetWrapper\BirdNET-Lite" "$(TargetDir)" /y /e</Command>
+      <Command>xcopy "$(SolutionDir)BirdnetWrapper\Birdnet_recorder" "$(TargetDir)" /y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -179,11 +179,16 @@
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy "$(SolutionDir)BirdnetWrapper\BirdNET-Lite" "$(TargetDir)" /y /e</Command>
+      <Command>xcopy "$(SolutionDir)BirdnetWrapper\Birdnet_recorder" "$(TargetDir)" /y /e</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Birdnet.cpp" />
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Birdnet.h" />
+    <ClInclude Include="Entities.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
