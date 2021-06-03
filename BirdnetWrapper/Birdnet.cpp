@@ -26,7 +26,7 @@ std::string Birdnet::handle_pyerror() {
 }
 
 
-std::vector<std::string> Birdnet::get_birdnet_array() {
+void Birdnet::get_birdnet_array() {
     std::vector<std::string> strVec = {};
     Py_Initialize();
 
@@ -42,6 +42,12 @@ std::vector<std::string> Birdnet::get_birdnet_array() {
                 strVec.push_back(single_element_string);
             }
             std::cout << "Amount of python array elements: '" << len(python_list_object) << "'" << std::endl;
+            if (len(python_list_object) > 0) {
+                resultVector.clear();
+                resultVector.insert(resultVector.end(), strVec.begin(), strVec.end());
+                shouldUpdate = true;
+                strVec.clear();
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
@@ -55,7 +61,6 @@ std::vector<std::string> Birdnet::get_birdnet_array() {
         PyErr_Clear();
 
     }
-    return strVec;
 }
 
 

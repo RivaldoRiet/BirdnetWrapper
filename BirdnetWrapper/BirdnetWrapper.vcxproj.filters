@@ -23,10 +23,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Entities.h">
+    <ClInclude Include="Birdnet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Birdnet.h">
+    <ClInclude Include="BirdEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

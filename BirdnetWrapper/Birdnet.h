@@ -14,7 +14,9 @@
 class Birdnet
 {
 public:
+    std::vector<std::string> resultVector = {};
+    bool shouldUpdate = false;
     std::string handle_pyerror();
-    std::vector<std::string> get_birdnet_array();
+    void get_birdnet_array();
     std::vector<std::string> get_random();
 };

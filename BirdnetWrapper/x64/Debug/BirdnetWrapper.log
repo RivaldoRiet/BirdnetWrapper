@@ -1,8 +1,5 @@
-﻿  Birdnet.cpp
+﻿  Main.cpp
 C:\Users\rival\Downloads\boost_1_75_0\boost\bind.hpp(41): message : The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
-  Main.cpp
-C:\Users\rival\Downloads\boost_1_75_0\boost\bind.hpp(41): message : The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
-  Generating Code...
   BirdnetWrapper.vcxproj -> C:\Users\rival\source\repos\BirdnetWrapper\x64\Debug\BirdnetWrapper.exe
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\.gitignore
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\config.py
