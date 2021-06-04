@@ -96,19 +96,15 @@ int main(int argc, char* argv[]) {
     std::string json = write_jsonEx(pt); // {"foo":"bar"}
     std::cout << "JSON value: '" << json << "'" << std::endl;
 
-    try
-    {
-        // you can pass http::InternetProtocol::V6 to Request to make an IPv6 request
-        http::Request request{ "www.google.com/" };
 
-        // send a get request
-        const auto response = request.send("GET");
+        http::Request request("webhook.site/621b9ca7-7022-4e8f-9997-8e60b82cc4e1");
+        // pass parameters as a map
+        const auto response = request.send("POST", json, {
+            "Content-Type: application/json"
+            });
         std::cout << std::string{ response.body.begin(), response.body.end() } << '\n'; // print the result
-    }
-    catch (const std::exception& e)
-    {
-        std::cerr << "Request failed, error: " << e.what() << '\n';
-    }
+
+
     //sendJson(json, "https://webhook.site/621b9ca7-7022-4e8f-9997-8e60b82cc4e1");
     /* std::thread t1(birdnetThread);
     std::thread t2(jsonObserver);
