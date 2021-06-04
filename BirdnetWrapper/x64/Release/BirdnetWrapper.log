@@ -1,8 +1,0 @@
-﻿  Main.cpp
-C:\Users\rival\Downloads\boost_1_75_0\boost\bind.hpp(41): message : The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
-  Generating code
-  Previous IPDB not found, fall back to full compilation.
-  All 135 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  BirdnetWrapper.vcxproj -> C:\Users\rival\source\repos\BirdnetWrapper\x64\Release\BirdnetWrapper.exe
-          1 file(s) copied.
