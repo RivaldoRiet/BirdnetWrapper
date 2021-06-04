@@ -1,5 +1,9 @@
 ﻿  Main.cpp
-C:\Users\rival\Downloads\boost_1_75_0\boost\bind.hpp(41): message : The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+C:\Users\rival\source\repos\BirdnetWrapper\packages\boost.1.75.0.0\lib\native\include\boost\bind.hpp(41): message : The practice of declaring the Bind placeholders (_1, _2, ...) in the global namespace is deprecated. Please use <boost/bind/bind.hpp> + using namespace boost::placeholders, or define BOOST_BIND_GLOBAL_PLACEHOLDERS to retain the current behavior.
+  Please define _WIN32_WINNT or _WIN32_WINDOWS appropriately. For example:
+  - add -D_WIN32_WINNT=0x0601 to the compiler command line; or
+  - add _WIN32_WINNT=0x0601 to your project's Preprocessor Definitions.
+  Assuming _WIN32_WINNT=0x0601 (i.e. Windows 7 target).
   BirdnetWrapper.vcxproj -> C:\Users\rival\source\repos\BirdnetWrapper\x64\Debug\BirdnetWrapper.exe
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\.gitignore
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\config.py

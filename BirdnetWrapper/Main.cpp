@@ -5,15 +5,19 @@
 #include <chrono>
 #include <thread>
 #include <sstream>
+#include <algorithm>
 #include <map>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include "BirdEntity.h"
 #include <regex>
+#include <boost/asio.hpp>
 
 using boost::property_tree::ptree;
 using boost::property_tree::read_json;
 using boost::property_tree::write_json;
+
+using boost::asio::ip::tcp;
 
 Birdnet* birdnet = new Birdnet();
 
@@ -37,9 +41,10 @@ std::string write_jsonEx(const std::string& path, const ptree& json)
     std::ostringstream oss;
     boost::property_tree::write_json(oss, json);
     std::regex reg("\\\"([0-9]+\\.{0,1}[0-9]*)\\\"");
+    std::regex reg1("\\\"(true)\\\"|\\\"(false)\\\"");
     std::string result = std::regex_replace(oss.str(), reg, "$1");
-
-    return result;
+    std::string result1 = std::regex_replace(result, reg1, "$1");
+    return result1;
 }
 
 int main(int argc, char* argv[]) {
@@ -65,13 +70,12 @@ int main(int argc, char* argv[]) {
 
 
     pt.put("tripwire", true);
-    pt.put("activity", 3.14);
+    pt.put("activity", (float) 3.14);
     pt.put("lichtwaarde", 255);
 
     for (auto& item : resultVector) {
         ptree child;
-        child.put("name", item.Birdname);
-        child.put("value", item.PredictionScore);
+        child.put(item.Birdname, item.PredictionScore);
         children1.push_back(std::make_pair("", child));
     }
 
