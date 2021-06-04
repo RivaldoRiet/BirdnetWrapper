@@ -19,6 +19,10 @@
 BirdnetWrapper/.vs/
 x64/
 x86/
+BirdnetWrapper/x64/
+BirdnetWrapper/x86/
+BirdnetWrapper/Debug/
+BirdnetWrapper/Release/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -36,6 +40,7 @@ bld/
 # NUNIT
 *.VisualState.xml
 TestResult.xml
+*.wav
 
 # Build Results of an ATL Project
 [Dd]ebugPS/
