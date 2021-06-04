@@ -1,71 +1,110 @@
+#include "Birdnet.h"
 #include <iostream>
-
 #include <string>
-
-#include <boost/python.hpp>
-
-#include <boost/python/numpy.hpp>
-
 #include <vector>
+#include <chrono>
+#include <thread>
+#include <sstream>
+#include <algorithm>
+#include <map>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include "BirdEntity.h"
+#include <regex>
+#include <boost/asio.hpp>
 
-namespace py = boost::python;
-namespace np = boost::python::numpy;
+using boost::property_tree::ptree;
+using boost::property_tree::read_json;
+using boost::property_tree::write_json;
 
-// decode a Python exception into a string
-std::string handle_pyerror() {
-    using namespace boost::python;
-    using namespace boost;
+using boost::asio::ip::tcp;
 
-    PyObject* exc, * val, * tb;
-    object formatted_list, formatted;
-    PyErr_Fetch(&exc, &val, &tb);
-    handle < > hexc(exc), hval(allow_null(val)), htb(allow_null(tb));
-    object traceback(import("traceback"));
-    if (!tb) {
-        object format_exception_only(traceback.attr("format_exception_only"));
-        formatted_list = format_exception_only(hexc, hval);
-    }
-    else {
-        object format_exception(traceback.attr("format_exception"));
-        formatted_list = format_exception(hexc, hval, htb);
-    }
-    formatted = str("\n").join(formatted_list);
-    return extract < std::string >(formatted);
+Birdnet* birdnet = new Birdnet();
+
+void birdnetThread() {
+    birdnet->get_birdnet_array();
 }
 
-inline std::vector<std::string> get_birdnet_array() {
-    std::vector<std::string> strVec = {};
-    Py_Initialize();
-
-    try {
-        boost::python::object birdnet_array_from_python = boost::python::import("analyze").attr("loadModel");
-
-        boost::python::list python_list_object = boost::python::extract < boost::python::list >((birdnet_array_from_python()));
-        boost::python::ssize_t n = boost::python::len(python_list_object);
-        for (boost::python::ssize_t i = 0; i < n; i++) {
-            boost::python::object element = python_list_object[i];
-            std::string single_element_string = boost::python::extract < std::string >(element);
-            std::cout << "Array element value: '" << single_element_string << "'" << std::endl;
-            strVec.push_back(single_element_string);
+void jsonObserver()
+{
+    while (true) {
+        if (birdnet->shouldUpdate) {
+            std::cout << "Printing json now" << std::endl;
+            birdnet->shouldUpdate = false;
         }
-        std::cout << "Amount of python array elements: '" << len(python_list_object) << "'" << std::endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
-    catch (const boost::python::error_already_set&) {
-        if (PyErr_Occurred()) {
-            std::string msg = handle_pyerror();
-            std::cout << "Error value: '" << msg << "'" << std::endl;
-        }
+}
 
-        boost::python::handle_exception();
-        PyErr_Clear();
-
-    }
-    return strVec;
+std::string write_jsonEx(const std::string& path, const ptree& json)
+{
+    std::ostringstream oss;
+    boost::property_tree::write_json(oss, json);
+    std::regex reg("\\\"([0-9]+\\.{0,1}[0-9]*)\\\"");
+    std::regex reg1("\\\"(true)\\\"|\\\"(false)\\\"");
+    std::string result = std::regex_replace(oss.str(), reg, "$1");
+    std::string result1 = std::regex_replace(result, reg1, "$1");
+    return result1;
 }
 
 int main(int argc, char* argv[]) {
+    ptree pt;
+    ptree children;
+    ptree children1;
+    const auto p1 = std::chrono::system_clock::now();
+    std::string unix = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(
+        p1.time_since_epoch()).count());
+    pt.put("timestamp", unix);
+    pt.put("id", "urn:shertogenbosch.faunatoren.1.hok.1");
 
-    std::vector<std::string> results = get_birdnet_array();
-    std::cout << "Vector length: '" << results.size() << "'" << std::endl;
+
+    std::vector<BirdEntity> resultVector = {};
+    BirdEntity birdEntity("merel", "0.15");
+    BirdEntity birdEntity1("spreeuw", "0.35");
+    BirdEntity birdEntity2("koolmees", "0.65");
+    BirdEntity birdEntity3("zwartkop", "0.46");
+    resultVector.push_back(birdEntity);
+    resultVector.push_back(birdEntity1);
+    resultVector.push_back(birdEntity2);
+    resultVector.push_back(birdEntity3);
+
+
+    pt.put("tripwire", true);
+    pt.put("activity", (float) 3.14);
+    pt.put("lichtwaarde", 255);
+
+    for (auto& item : resultVector) {
+        ptree child;
+        child.put(item.Birdname, item.PredictionScore);
+        children1.push_back(std::make_pair("", child));
+    }
+
+ //   pt.add_child("sensor_values", children);
+  //  pt.add_child("values", children);
+    pt.add_child("birdnet", children1);
+    //pt.put("values.name", "birdnet");
+   // auto& array = pt.get_child("values");
+    
+    //array.push_back(std::make_pair("name", ptree("birdnet")));
+   // std::string array_prefix = "name: birdnet";
+
+    //array.push_back(std::make_pair("", ptree(array_prefix)));
+    //array.push_back(std::make_pair("", ptree("value")));
+
+   // array.push_back(std::make_pair("", children1));
+
+    std::string outString;
+    std::ostringstream buf;
+    
+    std::string json = buf.str(); // {"foo":"bar"}
+    std::cout << "JSON value: '" << write_jsonEx(outString, pt) << "'" << std::endl;
+    /* std::thread t1(birdnetThread);
+    std::thread t2(jsonObserver);
+    t1.join();
+    t2.join(); */
+   // std::cout << "Vector length: '" << birdnet_results.size() << "'" << std::endl;
+    //example();
     getchar();
 }
+
+

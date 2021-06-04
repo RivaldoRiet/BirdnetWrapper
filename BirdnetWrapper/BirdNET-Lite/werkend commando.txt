@@ -1,3 +1,0 @@
-python analyze.py --i "C:\Users\rival\OneDrive\Bureaublad\BirdNET-Lite\De Koolmees en Pimpelmees in het voorjaar.wav"
-
-python analyze.py --i "C:\Users\rival\OneDrive\Bureaublad\BirdNET-Lite\De Koolmees en Pimpelmees in het voorjaar.wav" --lat 52.379189 --lon -4.899431 --week 18
