@@ -36,7 +36,39 @@ void jsonObserver()
     }
 }
 
-std::string write_jsonEx(const std::string& path, const ptree& json)
+void sendJson(std::string json, std::string host)
+{
+    try {
+    boost::asio::io_service io_service;
+    tcp::resolver resolver(io_service);
+    tcp::resolver::query query(host, "https");
+    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+    tcp::resolver::iterator end;
+    tcp::socket socket(io_service);
+    // Form the request. We specify the "Connection: close" header so that the
+    // server will close the socket after transmitting the response. This will
+    // allow us to treat all data up until the EOF as the content.
+    boost::asio::streambuf request;
+    std::ostream request_stream(&request);
+
+    request_stream << "POST /title/ HTTP/1.1 \r\n";
+    request_stream << "Host:" << host << "\r\n";
+    request_stream << "User-Agent: C/1.0\r\n";
+    request_stream << "Content-Type: application/json; charset=utf-8 \r\n";
+    request_stream << "Accept: */*\r\n";
+    request_stream << "Content-Length: " << json.length() << "\r\n";
+    request_stream << "Connection: close\r\n\r\n";  //NOTE THE Double line feed
+    request_stream << json;
+
+    // Send the request.
+    boost::asio::write(socket, request);
+    }
+    catch (std::exception& e) {
+        std::cerr << "Exception: " << e.what() << "\n";
+    }
+}
+
+std::string write_jsonEx(const ptree& json)
 {
     std::ostringstream oss;
     boost::property_tree::write_json(oss, json);
@@ -92,12 +124,11 @@ int main(int argc, char* argv[]) {
     //array.push_back(std::make_pair("", ptree("value")));
 
    // array.push_back(std::make_pair("", children1));
-
-    std::string outString;
-    std::ostringstream buf;
     
-    std::string json = buf.str(); // {"foo":"bar"}
-    std::cout << "JSON value: '" << write_jsonEx(outString, pt) << "'" << std::endl;
+    std::string json = write_jsonEx(pt); // {"foo":"bar"}
+    std::cout << "JSON value: '" << json << "'" << std::endl;
+
+    sendJson(json, "https://webhook.site/621b9ca7-7022-4e8f-9997-8e60b82cc4e1");
     /* std::thread t1(birdnetThread);
     std::thread t2(jsonObserver);
     t1.join();
