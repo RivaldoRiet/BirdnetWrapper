@@ -11,10 +11,8 @@ C:\Users\rival\Downloads\boost_1_75_0\boost\bind.hpp(41): message : The practice
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\recorder.py
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\server.py
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\startup.sh
-  C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\stream_analysis.json
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\img\inno_demo.png
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\img\xc.png
-  C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\logs\spec.jpg
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\model\BirdNET_1000_TF_ResNet_50K_config.json
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\model\BirdNET_1000_TF_ResNet_50K_model.tflite
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\model\BirdNET_1000_TF_ResNet_9000_config.json
@@ -79,9 +77,4 @@ C:\Users\rival\Downloads\boost_1_75_0\boost\bind.hpp(41): message : The practice
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\utils\image.py
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\utils\log.py
   C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\utils\__init__.py
-  C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\utils\__pycache__\audio.cpython-39.pyc
-  C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\utils\__pycache__\image.cpython-39.pyc
-  C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\utils\__pycache__\log.cpython-39.pyc
-  C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\utils\__pycache__\__init__.cpython-39.pyc
-  C:\Users\rival\source\repos\BirdnetWrapper\BirdnetWrapper\Birdnet_recorder\__pycache__\config.cpython-39.pyc
-  83 File(s) copied
+  76 File(s) copied

@@ -9,6 +9,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include "BirdEntity.h"
+#include <regex>
 
 using boost::property_tree::ptree;
 using boost::property_tree::read_json;
@@ -31,6 +32,15 @@ void jsonObserver()
     }
 }
 
+std::string write_jsonEx(const std::string& path, const ptree& json)
+{
+    std::ostringstream oss;
+    boost::property_tree::write_json(oss, json);
+    std::regex reg("\\\"([0-9]+\\.{0,1}[0-9]*)\\\"");
+    std::string result = std::regex_replace(oss.str(), reg, "$1");
+
+    return result;
+}
 
 int main(int argc, char* argv[]) {
     ptree pt;
@@ -53,16 +63,10 @@ int main(int argc, char* argv[]) {
     resultVector.push_back(birdEntity2);
     resultVector.push_back(birdEntity3);
 
-    ptree sensorChild;
-    sensorChild.put("name", "tripwire");
-    sensorChild.put("value", "true");
-    children.push_back(std::make_pair("", sensorChild));
-    sensorChild.put("name", "activity");
-    sensorChild.put("value", "3.14");
-    children.push_back(std::make_pair("", sensorChild));
-    sensorChild.put("name", "lichtwaarde");
-    sensorChild.put("value", "255");
-    children.push_back(std::make_pair("", sensorChild));
+
+    pt.put("tripwire", true);
+    pt.put("activity", 3.14);
+    pt.put("lichtwaarde", 255);
 
     for (auto& item : resultVector) {
         ptree child;
@@ -71,14 +75,25 @@ int main(int argc, char* argv[]) {
         children1.push_back(std::make_pair("", child));
     }
 
-    pt.add_child("values", children);
-    pt.put("name", "birdnet");
-    pt.add_child("value", children1);
+ //   pt.add_child("sensor_values", children);
+  //  pt.add_child("values", children);
+    pt.add_child("birdnet", children1);
+    //pt.put("values.name", "birdnet");
+   // auto& array = pt.get_child("values");
+    
+    //array.push_back(std::make_pair("name", ptree("birdnet")));
+   // std::string array_prefix = "name: birdnet";
 
+    //array.push_back(std::make_pair("", ptree(array_prefix)));
+    //array.push_back(std::make_pair("", ptree("value")));
+
+   // array.push_back(std::make_pair("", children1));
+
+    std::string outString;
     std::ostringstream buf;
-    write_json(buf, pt, false);
+    
     std::string json = buf.str(); // {"foo":"bar"}
-    std::cout << "JSON value: '" << json << "'" << std::endl;
+    std::cout << "JSON value: '" << write_jsonEx(outString, pt) << "'" << std::endl;
     /* std::thread t1(birdnetThread);
     std::thread t2(jsonObserver);
     t1.join();
