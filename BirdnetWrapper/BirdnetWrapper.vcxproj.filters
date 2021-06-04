@@ -32,6 +32,9 @@
     <ClInclude Include="..\json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HTTPRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

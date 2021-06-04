@@ -72,22 +72,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\rival\AppData\Local\Programs\Python\Python39\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\rival\source\repos\cpr\include\cpr;C:\Users\rival\AppData\Local\Programs\Python\Python39\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\rival\AppData\Local\Programs\Python\Python39\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\rival\AppData\Local\Programs\Python\Python39\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\rival\source\repos\cpr\include\cpr;C:\Users\rival\AppData\Local\Programs\Python\Python39\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\rival\AppData\Local\Programs\Python\Python39\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\rival\AppData\Local\Programs\Python\Python39\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\rival\source\repos\cpr\include\cpr;C:\Users\rival\AppData\Local\Programs\Python\Python39\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\rival\AppData\Local\Programs\Python\Python39\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\rival\AppData\Local\Programs\Python\Python39\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\rival\source\repos\cpr\include\cpr;C:\Users\rival\AppData\Local\Programs\Python\Python39\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\rival\AppData\Local\Programs\Python\Python39\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -190,6 +190,7 @@
     <ClInclude Include="..\json.hpp" />
     <ClInclude Include="BirdEntity.h" />
     <ClInclude Include="Birdnet.h" />
+    <ClInclude Include="HTTPRequest.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
